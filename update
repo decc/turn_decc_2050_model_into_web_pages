@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+# For sorting out dependencies
+require 'bundler'
+Bundler.setup
+
+# Ruby standard library
+require 'fileutils'
+include FileUtils::Verbose
+require 'tmpdir'
+
+# The dependencies
+require 'excel_to_code'
+
+# Change these if required
+local_spreadsheet = "/Users/tamc/Documents/2050/decc_2050_model/spreadsheet/2050Model.xlsx"
+remote_spreadsheet = "https://github.com/decc/decc_2050_model/blob/master/spreadsheet/2050Model.xlsx"
+target_folder = File.expand_path(File.join(File.dirname(__FILE__),'public'))
+current_folder = File.join(target_folder, 'current')
+
+# Find the latest version of the excel spreadsheet
+temp = Dir.tmpdir
+excel = File.join(temp, "2050Model.xlsx")
+if File.exists?(local_spreadsheet)
+  cp(local_spreadsheet, excel)
+else
+  `wget #{remote_spreadsheet} #{excel}`
+end
+
+# Process the excel into the series of web pages
+command = ExcelToHTML.new
+command.excel_file = excel
+command.output_directory = temp
+command.run_in_memory = true
+command.go!
+
+# Now we need to work out the version
+version = IO.readlines(File.join(temp,'Control.html')).join[/Version\s+(\d+\.\d+\.\d+)/,1].gsub('.','_')
+
+# Now we need to move everything to the right spot
+folder_for_this_version = File.join(target_folder,version)
+
+mv temp, folder_for_this_version, :force => true
+
+# Link the latest version to a 'current' folder if required
+File.unlink(current_folder) if File.exists?(current_folder)
+File.symlink(folder_for_this_version, current_folder)
