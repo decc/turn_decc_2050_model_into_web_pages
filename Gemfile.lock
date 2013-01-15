@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/tamc/excel_to_code.git
-  revision: 47c685e8317b95d2bf653a6ade8e6d6cac0a7460
+  revision: 8a11e9883eba991d400653e1408398064bec93a8
   branch: excel_to_html
   specs:
     excel_to_code (0.1.2)

@@ -1,4 +1,4 @@
 <virtualhost *:80>
   ServerName  excel.2050.org.uk
-  DocumentRoot /user/ubuntu/turn_decc_2050_model_into_web_pages/public
+  DocumentRoot /home/ubuntu/turn_decc_2050_model_into_web_pages/public
 </virtualhost>
